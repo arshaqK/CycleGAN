@@ -158,9 +158,9 @@ def train(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_root', type=str, default='/content/dataset', help='root dir with trainA/trainB')
-    parser.add_argument('--checkpoint_dir', type=str, default='/content/checkpoints', help='where to save models')
-    parser.add_argument('--samples_dir', type=str, default='/content/samples', help='where to save sample images')
+    parser.add_argument('--dataset_root', type=str, default='/kaggle/working/dataset', help='root dir with trainA/trainB')
+    parser.add_argument('--checkpoint_dir', type=str, default='/kaggle/working/checkpoints', help='where to save models')
+    parser.add_argument('--samples_dir', type=str, default='/kaggle/working/samples', help='where to save sample images')
     parser.add_argument('--batch_size', type=int, default=4)
     parser.add_argument('--load_size', type=int, default=286)
     parser.add_argument('--crop_size', type=int, default=256)
