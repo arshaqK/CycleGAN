@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CycleGAN Face ↔ Sketch Demo</title>
+  <style>
+    body {font-family: Arial; max-width: 900px; margin: 20px auto;}
+    .row {display:flex; gap: 10px; align-items:center;}
+    img {max-width: 320px; border:1px solid #ddd; padding:6px; background:#fff;}
+    #result {margin-top: 10px;}
+  </style>
+</head>
+<body>
+  <h2>CycleGAN Face ↔ Sketch Demo</h2>
+  <p>Upload an image or capture from your camera. The app will detect whether it is a sketch or a photo and convert accordingly.</p>
+  <div class="row">
+    <input type="file" id="imageInput" accept="image/*"/>
+    <button id="uploadBtn">Convert</button>
+    <button id="captureBtn">Use Camera</button>
+  </div>
+  <div id="cameraArea" style="display:none;">
+    <video id="video" autoplay playsinline width="320" height="240" style="border:1px solid #ccc;"></video>
+    <button id="snap">Snap</button>
+  </div>
+  <h3>Input</h3>
+  <img id="inputImg" src="" alt="input preview" />
+  <h3>Output</h3>
+  <img id="outputImg" src="" alt="output preview" />
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const inputImg = document.getElementById('inputImg');
+    const outputImg = document.getElementById('outputImg');
+    const captureBtn = document.getElementById('captureBtn');
+    const cameraArea = document.getElementById('cameraArea');
+    const video = document.getElementById('video');
+    const snap = document.getElementById('snap');
+    let currentFile = null;
+    imageInput.onchange = e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      currentFile = f;
+      inputImg.src = URL.createObjectURL(f);
+    };
+    uploadBtn.onclick = async () => {
+      const f = currentFile;
+      if (!f) { alert('Select or capture an image first'); return; }
+      const form = new FormData();
+      form.append('image', f);
+      uploadBtn.innerText = 'Converting...';
+      try {
+        const res = await fetch('/convert', {method:'POST', body: form});
+        const blob = await res.blob();
+        outputImg.src = URL.createObjectURL(blob);
+      } catch (e) {
+        alert('Error: ' + e.message);
+      } finally {
+        uploadBtn.innerText = 'Convert';
+      }
+    };
+    captureBtn.onclick = async () => {
+      cameraArea.style.display = cameraArea.style.display === 'none' ? 'block' : 'none';
+      if (cameraArea.style.display === 'block') {
+        const stream = await navigator.mediaDevices.getUserMedia({video:true});
+        video.srcObject = stream;
+      } else {
+        const tracks = video.srcObject?.getTracks();
+        tracks?.forEach(t => t.stop());
+      }
+    };
+    snap.onclick = () => {
+      const c = document.createElement('canvas');
+      c.width = video.videoWidth;
+      c.height = video.videoHeight;
+      c.getContext('2d').drawImage(video,0,0);
+      c.toBlob(b => {
+        const f = new File([b], 'capture.png', {type:'image/png'});
+        currentFile = f;
+        inputImg.src = URL.createObjectURL(f);
+      }, 'image/png');
+    };
+  </script>
+</body>
+</html>

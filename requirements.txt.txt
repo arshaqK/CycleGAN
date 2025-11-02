@@ -1,0 +1,8 @@
+torch>=2.0
+torchvision
+numpy
+Pillow
+Flask
+opencv-python
+tqdm
+kornia>=0.6.0        # optional for image ops
