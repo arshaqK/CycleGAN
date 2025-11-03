@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 
 app = Flask(__name__)
-CHECKPOINT_DIR = os.environ.get('CHECKPOINT_DIR', './checkpoints')  # set in Colab or server
+CHECKPOINT_DIR = '/content/drive/MyDrive/cycle_checkpoints'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # load latest checkpoint
